@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
-from config import Config
+from .config import Config
 
 def get_db():
     """Get database connection"""

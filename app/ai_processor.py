@@ -8,7 +8,7 @@ import re
 from textblob import TextBlob
 import nltk
 from nltk.tokenize import word_tokenize
-from config import Config
+from .config import Config
 
 # Download NLTK data
 try:

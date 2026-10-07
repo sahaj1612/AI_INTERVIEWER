@@ -135,9 +135,21 @@ The scores are generated from the answer you submit (and, when available, the in
 
 ## 📂 Project Structure
 
-- `app.py` - Flask web application routes and controller logic
-- `ai_processor.py` - Gemini AI integration, question generation, and answer analysis
-- `database.py` - SQLite database initialization and data access methods
-- `report_generator.py` - Detailed performance report generation (HTML/PDF)
-- `templates/` - Jinja2 HTML templates
-- `static/` - CSS styles and JavaScript logic (`interview.js`, `speech.js`, `camera.js`)
+```text
+AI_INTERVIEW/
+├── app.py                    # Development entry point (python app.py)
+├── app/                      # Flask application package
+│   ├── web.py                # Routes and application setup
+│   ├── ai_processor.py       # Gemini integration and answer analysis
+│   ├── database.py           # SQLite persistence
+│   ├── config.py             # Environment and local path configuration
+│   ├── report_generator.py   # HTML/PDF report helpers
+│   ├── templates/            # Jinja templates
+│   └── static/                # CSS and browser JavaScript
+├── docs/                     # Project documentation
+├── instance/                 # Local database, uploads, and Flask sessions
+├── requirements.txt
+└── venv/                     # Local virtual environment (not committed)
+```
+
+Runtime files are kept under the ignored `instance/` directory. The database and uploaded files remain local to this checkout.

@@ -243,28 +243,31 @@ Data and files:
 15. MAIN PROJECT FILES
 
 app.py
+    Development entry point; run with python app.py.
+
+app/web.py
     Flask routes, interview flow, answer-analysis API, and camera-summary API.
 
-ai_processor.py
+app/ai_processor.py
     Gemini question generation, answer evaluation, fallback evaluation, and report data.
 
-database.py
+app/database.py
     SQLite database setup and persistence for sessions, questions, and answers.
 
-report_generator.py
+app/report_generator.py
     Generates detailed HTML/PDF-oriented interview reports.
 
-templates/
+app/templates/
     HTML pages for home, upload, setup, interview, feedback, and report screens.
 
-static/js/interview.js
-    Loads questions, submits answers, and displays per-question feedback.
+app/static/js/
+    Browser JavaScript for interview flow, speech recognition, and local camera checks.
 
-static/js/speech.js
-    Handles browser speech recognition and transcripts.
+docs/
+    Project overview and detailed project documentation.
 
-static/js/camera.js
-    Handles optional camera/microphone controls and local camera-check signals.
+instance/
+    Local SQLite database, uploaded resumes, and Flask session files.
 
 
 16. IMPORTANT PRIVACY PRINCIPLE
