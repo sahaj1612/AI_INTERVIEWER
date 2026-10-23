@@ -2,6 +2,10 @@
 
 An AI-powered technical and behavioral interview preparation platform featuring speech recognition, real-time answer analysis, and comprehensive performance feedback.
 
+**Author & maintainer:** [Sahaj (@sahaj1612)](https://github.com/sahaj1612).
+
+**Copyright © 2026 Sahaj.**
+
 ---
 
 ## 🚀 Quick Start Guide
