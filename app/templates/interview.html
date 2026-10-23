@@ -3,156 +3,67 @@
 {% block title %}Interview Session{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 mb-6 shadow-lg">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-bold">
-                    <i class="fas fa-microphone-alt mr-2"></i> Live Interview Session
-                </h2>
-                <p class="opacity-90">Domain: {{ session.domain }} | Level: {{ session.experience_level }}</p>
-            </div>
-            <div class="text-right">
-                <div id="question-counter" class="text-xl font-bold">
-                    Question 1 of {{ questions|length }}
-                </div>
-                <div class="text-sm">Session ID: {{ session_id }}</div>
-            </div>
+<div class="interview-room" aria-label="Interview practice room">
+    <div class="interview-layout">
+    <aside class="video-panel" aria-labelledby="video-panel-heading">
+        <h2 id="video-panel-heading"><i class="fas fa-video" aria-hidden="true"></i> Camera preview</h2>
+        <div id="camera-container" class="room-camera"><video id="camera-feed" autoplay playsinline></video><div id="camera-off"><i class="fas fa-video-slash" aria-hidden="true"></i><span>Camera is off</span></div></div>
+        <div class="video-controls"><button id="toggle-camera" type="button"><i class="fas fa-video" aria-hidden="true"></i> Turn on camera</button><button id="toggle-mic" type="button"><i class="fas fa-microphone" aria-hidden="true"></i> Unmute</button></div>
+        <div class="room-integrity"><strong><i class="fas fa-shield-halved" aria-hidden="true"></i> Local camera check</strong><p id="integrity-status">Turn on the camera to enable face and eye visibility checks.</p><small>No video is recorded or uploaded. This check reports aggregate signals only and is not an automatic decision.</small></div>
+    </aside>
+    <div class="interview-content">
+    <section class="room-card">
+        <header class="room-topline">
+            <div class="room-brand"><span class="room-brand-icon" aria-hidden="true"><i class="fas fa-wave-square"></i></span><span>Your practice room</span></div>
+            <span class="room-live"><i aria-hidden="true"></i> LIVE SESSION</span>
+        </header>
+
+        <div class="room-role">
+            <span class="room-role-icon" aria-hidden="true"><i class="fas fa-code"></i></span>
+            <div class="room-role-copy"><span class="room-eyebrow">PRACTICING FOR</span><strong>{{ session.domain or 'Interview practice' }}</strong><small>{{ session.experience_level or 'All levels' }} experience</small></div>
+            <div class="room-session"><span class="room-eyebrow">SESSION</span><strong>#{{ session_id }}</strong></div>
         </div>
+
+        <section class="room-question" aria-labelledby="question-heading">
+            <div class="room-question-meta"><span id="question-counter">Question 1 of {{ questions|length }}</span><span class="room-tags"><span id="question-type" class="room-tag">Behavioral</span><span id="question-difficulty" class="room-tag">Medium</span></span></div>
+            <h1 id="question-heading">Current question</h1>
+            <div id="question-text" class="room-question-text">Loading your question…</div>
+            <div class="room-progress" aria-hidden="true"><span id="question-progress-fill"></span></div>
+        </section>
+
+        <section class="room-answer" aria-labelledby="answer-heading">
+            <div class="room-answer-heading"><h2 id="answer-heading">Your answer</h2><span class="room-encouragement"><i class="far fa-lightbulb" aria-hidden="true"></i> Take a breath. You’ve got this.</span></div>
+            <div class="answer-waveform-panel" aria-live="polite">
+                <div class="answer-waveform-heading"><span class="waveform-label">VOICE WAVEFORM</span><span id="waveform-state">Ready when you are</span></div>
+                <div id="answer-waveform" class="answer-waveform" role="img" aria-label="Microphone waveform, inactive">
+                    {% for bar in range(48) %}<span style="--bar-index: {{ bar }}"></span>{% endfor %}
+                </div>
+                <div class="room-speaking-row">
+                    <button id="toggle-speech" class="room-mic-button" type="button" aria-label="Start speaking"><i class="fas fa-microphone" aria-hidden="true"></i></button>
+                    <div class="room-speaking-copy"><strong>Speak your answer</strong><small>or type it below</small></div>
+                    <div id="speech-status" class="room-listening-status"><span class="room-status-dot"></span><span>Off</span></div>
+                </div>
+            </div>
+            <label class="sr-only" for="answer-text">Type your answer</label>
+            <textarea id="answer-text" rows="4" placeholder="Type your answer here, or speak and watch your words appear…"></textarea>
+            <details class="room-transcript"><summary>View speech transcript</summary><div id="transcript-display"><p>Speech transcript will appear here…</p></div></details>
+            <div class="room-actions">
+                <button id="submit-answer" class="room-primary-action" type="button"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit answer</button>
+                <div class="room-secondary-actions"><button id="skip-question" class="room-text-action" type="button"><i class="fas fa-forward" aria-hidden="true"></i> Skip</button><button id="finish-interview" class="room-text-action" type="button">Finish session</button></div>
+            </div>
+        </section>
+
+        <footer class="room-footer"><span><i class="fas fa-shield-heart" aria-hidden="true"></i> Your practice, at your pace</span><span id="room-footer-count">01 <b>/ {{ '%02d'|format(questions|length) }}</b></span></footer>
+    </section>
+
+    <section id="feedback-area" class="room-feedback hidden" aria-labelledby="feedback-heading">
+        <h2 id="feedback-heading"><i class="fas fa-chart-line" aria-hidden="true"></i> Your feedback</h2>
+        <div id="feedback-content"></div>
+        <button id="next-question-btn" class="room-primary-action" type="button">Next question <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+    </section>
     </div>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Left Column: Camera & Controls -->
-        <div class="lg:col-span-1 space-y-6">
-            <!-- Camera Feed -->
-            <div class="bg-white rounded-xl shadow-lg p-4">
-                <h3 class="text-lg font-bold mb-4 flex items-center">
-                    <i class="fas fa-video mr-2 text-blue-600"></i> Camera Preview
-                </h3>
-                <div id="camera-container" class="relative bg-black rounded-lg overflow-hidden" style="height: 240px;">
-                    <video id="camera-feed" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <div id="camera-off" class="absolute inset-0 flex items-center justify-center bg-gray-900 text-white">
-                        <i class="fas fa-video-slash text-4xl"></i>
-                        <p class="mt-2">Camera is off</p>
-                    </div>
-                </div>
-                <div class="flex justify-center space-x-4 mt-4">
-                    <button id="toggle-camera" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-video mr-1"></i> Toggle Camera
-                    </button>
-                    <button id="toggle-mic" 
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                        <i class="fas fa-microphone mr-1"></i> Toggle Mic
-                    </button>
-                </div>
-                <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                    <div class="flex items-center gap-2 text-sm font-semibold text-blue-800"><i class="fas fa-shield-halved"></i> Local camera check</div>
-                    <p id="integrity-status" class="text-sm font-medium text-gray-500 mt-1">Turn on the camera to enable face and eye visibility checks.</p>
-                    <p class="text-xs text-gray-500 mt-2">No video is recorded or uploaded. This check reports aggregate signals only and is not an automatic decision.</p>
-                </div>
-            </div>
-            
-            <!-- Speech Controls -->
-            <div class="bg-white rounded-xl shadow-lg p-4">
-                <h3 class="text-lg font-bold mb-4 flex items-center">
-                    <i class="fas fa-comment-dots mr-2 text-green-600"></i> Speech Recognition
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span>Speech Recognition:</span>
-                        <div id="speech-status" class="flex items-center">
-                            <span class="h-3 w-3 rounded-full bg-red-500 mr-2"></span>
-                            <span class="text-sm">Off</span>
-                        </div>
-                    </div>
-                    <button id="toggle-speech" 
-                            class="w-full py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg font-semibold hover:opacity-90">
-                        <i class="fas fa-microphone mr-2"></i> Start Speaking
-                    </button>
-                    <div class="text-sm text-gray-500">
-                        <i class="fas fa-info-circle mr-1"></i> Click to start/stop speech recognition
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        
-        <!-- Middle Column: Question & Answer -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Current Question -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">
-                        <i class="fas fa-question-circle mr-2 text-blue-600"></i> Current Question
-                    </h3>
-                    <div id="question-tags" class="flex space-x-2">
-                        <span id="question-type" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                            Behavioral
-                        </span>
-                        <span id="question-difficulty" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                            Medium
-                        </span>
-                    </div>
-                </div>
-                
-                <div id="question-text" class="text-lg p-4 bg-gray-50 rounded-lg mb-6 min-h-[100px]">
-                    Loading question...
-                </div>
-                
-                <!-- Answer Area -->
-                <div class="mb-6">
-                    <label class="block text-lg font-semibold mb-3">
-                        <i class="fas fa-pen mr-2 text-green-600"></i> Your Answer
-                    </label>
-                    <div id="transcript-display" class="mb-3 p-4 bg-gray-50 rounded-lg min-h-[80px] border border-gray-200">
-                        <p class="text-gray-500 italic">Speech transcript will appear here...</p>
-                    </div>
-                    <textarea id="answer-text" rows="5" 
-                              class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Type or speak your answer here..."></textarea>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap gap-4">
-                    <button id="submit-answer"
-                            class="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 flex items-center">
-                        <i class="fas fa-paper-plane mr-2"></i> Submit Answer
-                    </button>
-
-                    <button id="skip-question"
-                            class="px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600">
-                        <i class="fas fa-forward mr-2"></i> Skip Question
-                    </button>
-
-                    <button id="finish-interview"
-                            class="px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600">
-                        Finish Interview
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Feedback Area (Initially Hidden) -->
-            <div id="feedback-area" class="bg-white rounded-xl shadow-lg p-6 hidden">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-chart-bar mr-2 text-purple-600"></i> AI Feedback
-                </h3>
-                <div id="feedback-content" class="space-y-4">
-                    <!-- Feedback will be loaded here -->
-                </div>
-                <div class="mt-6 text-center">
-                    <button id="next-question-btn" 
-                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:opacity-90">
-                        Next Question <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
-
-<!-- Hidden Data -->
 <input type="hidden" id="session-id" value="{{ session_id }}">
 <input type="hidden" id="current-question-id" value="">
 {% endblock %}

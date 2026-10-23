@@ -161,7 +161,6 @@ def oauth_callback(provider):
         session.clear()
         session['user_id'] = user['id']
         session['user_role'] = user['role']
-        flash(f"Signed in as {user['display_name'] or user['email']}.", 'success')
         return redirect(url_for('index'))
     except Exception as error:
         app.logger.warning('OAuth sign-in failed for %s: %s', provider, error)

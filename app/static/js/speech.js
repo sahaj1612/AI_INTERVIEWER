@@ -6,6 +6,12 @@ class SpeechRecognitionManager {
         this.finalTranscript = '';
         this.interimTranscript = '';
         this.isSupported = false;
+        this.mediaStream = null;
+        this.audioContext = null;
+        this.analyser = null;
+        this.waveformFrame = null;
+        this.waveformBars = document.querySelectorAll('#answer-waveform span');
+        this.waveformState = document.getElementById('waveform-state');
         
         this.speechButton = document.getElementById('toggle-speech');
         this.speechStatus = document.getElementById('speech-status');
@@ -66,6 +72,7 @@ class SpeechRecognitionManager {
             this.isListening = false;
             this.updateUI();
             this.sendSpeechStatus(false);
+            this.stopAudioVisualizer();
             
             // Show user-friendly error messages
             switch (event.error) {
@@ -88,6 +95,7 @@ class SpeechRecognitionManager {
             this.isListening = false;
             this.updateUI();
             this.sendSpeechStatus(false);
+            this.stopAudioVisualizer();
         };
         
         // Button click handler
@@ -162,12 +170,66 @@ class SpeechRecognitionManager {
                 video: false 
             });
             
-            // Stop the temporary stream tracks
-            stream.getTracks().forEach(track => track.stop());
+            this.mediaStream = stream;
+            this.startAudioVisualizer(stream);
             return true;
         } catch (error) {
             throw error;
         }
+    }
+
+    startAudioVisualizer(stream) {
+        if (!this.waveformBars.length) return;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+
+        try {
+            this.audioContext = new AudioContextClass();
+            this.analyser = this.audioContext.createAnalyser();
+            this.analyser.fftSize = 128;
+            this.analyser.smoothingTimeConstant = 0.78;
+            this.audioContext.createMediaStreamSource(stream).connect(this.analyser);
+            if (this.audioContext.state === 'suspended') this.audioContext.resume().catch(() => {});
+            this.setWaveformActive(true);
+            const samples = new Uint8Array(this.analyser.frequencyBinCount);
+            const draw = () => {
+                if (!this.analyser) return;
+                this.analyser.getByteFrequencyData(samples);
+                const bucketSize = Math.max(1, Math.floor(samples.length / this.waveformBars.length));
+                this.waveformBars.forEach((bar, index) => {
+                    let total = 0;
+                    for (let i = index * bucketSize; i < Math.min(samples.length, (index + 1) * bucketSize); i++) total += samples[i];
+                    const level = total / bucketSize / 255;
+                    bar.style.height = `${4 + Math.round(level * 30)}px`;
+                });
+                this.waveformFrame = requestAnimationFrame(draw);
+            };
+            draw();
+        } catch (error) {
+            console.warn('Audio waveform unavailable:', error);
+            this.setWaveformActive(false);
+        }
+    }
+
+    setWaveformActive(active) {
+        const waveform = document.getElementById('answer-waveform');
+        if (waveform) {
+            waveform.classList.toggle('is-listening', active);
+            waveform.setAttribute('aria-label', active ? 'Live microphone waveform' : 'Microphone waveform, inactive');
+        }
+        if (this.waveformState) this.waveformState.textContent = active ? 'Listening to your voice' : 'Ready when you are';
+    }
+
+    stopAudioVisualizer() {
+        if (this.waveformFrame) cancelAnimationFrame(this.waveformFrame);
+        this.waveformFrame = null;
+        if (this.mediaStream) this.mediaStream.getTracks().forEach(track => track.stop());
+        this.mediaStream = null;
+        if (this.audioContext && this.audioContext.state !== 'closed') this.audioContext.close().catch(() => {});
+        this.audioContext = null;
+        this.analyser = null;
+        this.waveformBars.forEach(bar => { bar.style.height = ''; });
+        this.setWaveformActive(false);
     }
     
     stop() {
@@ -186,13 +248,19 @@ class SpeechRecognitionManager {
         if (!this.speechButton) return;
         
         if (this.isListening) {
-            this.speechButton.innerHTML = '<i class="fas fa-microphone-slash mr-2"></i> Stop Speaking';
+            this.speechButton.innerHTML = this.speechButton.classList.contains('room-mic-button')
+                ? '<i class="fas fa-microphone-slash" aria-hidden="true"></i>'
+                : '<i class="fas fa-microphone-slash mr-2"></i> Stop Speaking';
+            if (this.speechButton.classList.contains('room-mic-button')) this.speechButton.setAttribute('aria-label', 'Stop speaking');
             this.speechButton.classList.remove('from-green-500', 'to-blue-500');
             this.speechButton.classList.add('from-red-500', 'to-purple-500');
             
             this.updateStatusIndicator('green', 'Listening...');
         } else {
-            this.speechButton.innerHTML = '<i class="fas fa-microphone mr-2"></i> Start Speaking';
+            this.speechButton.innerHTML = this.speechButton.classList.contains('room-mic-button')
+                ? '<i class="fas fa-microphone" aria-hidden="true"></i>'
+                : '<i class="fas fa-microphone mr-2"></i> Start Speaking';
+            if (this.speechButton.classList.contains('room-mic-button')) this.speechButton.setAttribute('aria-label', 'Start speaking');
             this.speechButton.classList.remove('from-red-500', 'to-purple-500');
             this.speechButton.classList.add('from-green-500', 'to-blue-500');
             
@@ -203,11 +271,15 @@ class SpeechRecognitionManager {
     updateStatusIndicator(color, text) {
         if (!this.speechStatus) return;
         
-        const statusIndicator = this.speechStatus.querySelector('.h-3');
+        const statusIndicator = this.speechStatus.querySelector('.room-status-dot, .h-3');
         const statusText = this.speechStatus.querySelector('span:last-child');
         
         if (statusIndicator) {
-            statusIndicator.className = `h-3 w-3 rounded-full bg-${color}-500 mr-2 ${color === 'green' ? 'animate-pulse' : ''}`;
+            if (statusIndicator.classList.contains('room-status-dot')) {
+                this.speechStatus.classList.toggle('is-active', color === 'green');
+            } else {
+                statusIndicator.className = `h-3 w-3 rounded-full bg-${color}-500 mr-2 ${color === 'green' ? 'animate-pulse' : ''}`;
+            }
         }
         
         if (statusText) {

@@ -72,6 +72,16 @@ class InterviewManager {
         if (counterEl) {
             counterEl.textContent = `Question ${this.currentQuestionIndex + 1} of ${this.totalQuestions || 1}`;
         }
+        const progressFill = document.getElementById('question-progress-fill');
+        if (progressFill) {
+            const questionCount = this.totalQuestions || 1;
+            progressFill.style.width = `${Math.min(100, ((this.currentQuestionIndex + 1) / questionCount) * 100)}%`;
+        }
+        const footerCount = document.getElementById('room-footer-count');
+        if (footerCount) {
+            const questionCount = this.totalQuestions || 1;
+            footerCount.innerHTML = `${String(this.currentQuestionIndex + 1).padStart(2, '0')} <b>/ ${String(questionCount).padStart(2, '0')}</b>`;
+        }
         
         // Update question tags
         const typeTag = document.getElementById('question-type');

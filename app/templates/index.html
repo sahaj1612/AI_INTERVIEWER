@@ -1,53 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
-
-{% block head %}
-<style>
-    .app-main { padding-top: 1rem !important; }
-    .landing-hero { padding-top: 1.2rem !important; }
-    .steps-section h2 { text-align: center; font-weight: 800; }
-    @media (min-width: 641px) {
-        .feature-grid { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; }
-    }
-</style>
-{% endblock %}
+{% block title %}Practice smarter{% endblock %}
 
 {% block content %}
-<section class="landing-hero">
-    <div class="eyebrow"><i class="fas fa-wand-magic-sparkles"></i> Your interview practice space</div>
-    <h1>Practice with purpose.<br><span>Answer with confidence.</span></h1>
-    <p>Prepare for your next opportunity with personalized questions, spoken responses, and practical feedback that helps you improve.</p>
-    <div class="hero-actions">
-        <a href="{{ url_for('upload') }}" class="btn-primary"><i class="fas fa-play mr-2"></i>Start a practice session</a>
-        <a href="#how-it-works" class="btn-secondary"><i class="fas fa-arrow-down mr-2"></i>See how it works</a>
-    </div>
-</section>
+<div class="landing-page">
+    <section class="landing-hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-dot"></span> A calmer way to get interview-ready</div>
+            <h1 id="hero-title">Your next opportunity starts with <span>a little practice.</span></h1>
+            <p>Walk into your next interview knowing what to say. Practice real questions out loud, get thoughtful feedback, and find your own way to a stronger answer.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('upload') }}" class="btn-primary">Start practicing <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                <a href="#how-it-works" class="btn-secondary"><i class="fas fa-circle-play" aria-hidden="true"></i> See how it works</a>
+            </div>
+            <div class="hero-note"><span class="note-avatars" aria-hidden="true"><i>J</i><i>M</i><i>A</i></span><span>Built for the interview you have coming up.</span></div>
+        </div>
 
-<section class="feature-grid" aria-label="Platform features">
-    <article class="feature-card">
-        <div class="feature-icon"><i class="fas fa-microphone-lines"></i></div>
-        <h3>Practice naturally</h3>
-        <p>Speak or type your response just as you would in a real interview.</p>
-    </article>
-    <article class="feature-card">
-        <div class="feature-icon"><i class="fas fa-chart-simple"></i></div>
-        <h3>Improve with feedback</h3>
-        <p>Review relevance, clarity, confidence, and STAR-method structure after every answer.</p>
-    </article>
-    <article class="feature-card">
-        <div class="feature-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
-        <h3>Build better answers</h3>
-        <p>Turn each response into a clear, specific answer you can confidently use in a real interview.</p>
-    </article>
-</section>
+        <div class="practice-preview" aria-label="Preview of an interview practice session">
+            <div class="preview-topline"><div class="preview-brand"><span class="preview-brand-icon"><i class="fas fa-sparkles" aria-hidden="true"></i></span> Your practice room</div><span class="preview-live"><i></i> SESSION PREVIEW</span></div>
+            <div class="preview-role"><div class="role-icon"><i class="fas fa-code" aria-hidden="true"></i></div><div><span class="preview-label">PRACTICING FOR</span><strong>Product Designer</strong><small>Behavioral · Mid-level</small></div><span class="role-more"><i class="fas fa-ellipsis" aria-hidden="true"></i></span></div>
+            <div class="question-card"><div class="question-meta"><span>QUESTION 03 <b>OF 08</b></span><span><i class="far fa-clock" aria-hidden="true"></i> 02:00</span></div><p>Tell me about a time you had to make a difficult trade-off in a design.</p><div class="question-progress"><span></span></div></div>
+            <div class="answer-area"><div class="answer-heading"><span>Your answer</span><span class="answer-tip"><i class="far fa-lightbulb" aria-hidden="true"></i> Take a breath. You’ve got this.</span></div><div class="waveform" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="record-row"><button type="button" class="record-button" aria-label="Microphone preview"><i class="fas fa-microphone" aria-hidden="true"></i></button><span><strong>Speak your answer</strong><small>or type it instead</small></span><span class="record-time">00:42</span><span class="record-status"><i></i> Listening</span></div></div>
+            <div class="preview-footer"><span><i class="fas fa-shield-heart" aria-hidden="true"></i> Your practice, at your pace</span><span>03 <b>/ 08</b></span></div>
+        </div>
+    </section>
 
-<section id="how-it-works" class="steps-section">
-    <h2>How It Works</h2>
-    <div class="steps">
-        <article class="step"><div class="step-number">01</div><h3>Share your resume</h3><p>Upload or paste your resume so questions can be tailored to your background.</p></article>
-        <article class="step"><div class="step-number">02</div><h3>Choose your role</h3><p>Select a domain and experience level, then begin the guided interview.</p></article>
-        <article class="step"><div class="step-number">03</div><h3>Review and grow</h3><p>Receive clear feedback after every answer and see your progress at the end.</p></article>
-    </div>
-</section>
+    <section class="benefit-strip" aria-label="What you get from practice">
+        <div><span class="benefit-icon"><i class="fas fa-user-check" aria-hidden="true"></i></span><span><strong>Made for your experience</strong><small>Questions tailored to you</small></span></div>
+        <div><span class="benefit-icon"><i class="fas fa-microphone-lines" aria-hidden="true"></i></span><span><strong>Practice out loud</strong><small>Build comfort as you go</small></span></div>
+        <div><span class="benefit-icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span><span><strong>See how you’re improving</strong><small>Useful, clear feedback</small></span></div>
+    </section>
+
+    <section class="steps-section" id="how-it-works">
+        <div class="section-heading"><span class="section-kicker">A few minutes can make a difference</span><h2>From “what if?” to <span>“I’m ready.”</span></h2><p>A simple, supportive routine to help you show up as yourself.</p></div>
+        <div class="steps">
+            <article class="step"><div class="step-top"><span class="step-number">01</span><span class="step-icon"><i class="fas fa-file-arrow-up" aria-hidden="true"></i></span></div><h3>Start with your story</h3><p>Share your resume so your questions can reflect the work and experience you bring.</p></article>
+            <article class="step"><div class="step-top"><span class="step-number">02</span><span class="step-icon"><i class="fas fa-comments" aria-hidden="true"></i></span></div><h3>Practice the conversation</h3><p>Choose a role and answer thoughtful questions by speaking or typing, at your own pace.</p></article>
+            <article class="step"><div class="step-top"><span class="step-number">03</span><span class="step-icon"><i class="fas fa-seedling" aria-hidden="true"></i></span></div><h3>Grow with every answer</h3><p>Get practical feedback on clarity, relevance, and how to make your stories land.</p></article>
+        </div>
+        <div class="closing-cta"><span><strong>Ready when you are.</strong><small>Your next practice session is just a few clicks away.</small></span><a href="{{ url_for('upload') }}" class="btn-primary">Start a session <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+    </section>
+</div>
 {% endblock %}
